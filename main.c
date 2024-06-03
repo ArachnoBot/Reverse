@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 		twoArgs(argv[1], argv[2]);
 	} 
 	else {
-		fprintf(stderr, "Invalid amount of arguments\n");
+		fprintf(stderr, "usage: reverse <input> <output>\n");
 		exit(1);
 	}
 
