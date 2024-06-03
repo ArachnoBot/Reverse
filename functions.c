@@ -58,7 +58,7 @@ void oneArg(char* inputFileName) {
 	// Open input file with error checking
 	FILE* inputFile = fopen(inputFileName, "r");
 	if (inputFile == NULL) {
-		fprintf(stderr, "error: cannot open file %s\n", inputFileName);
+		fprintf(stderr, "reverse: cannot open file %s\n", inputFileName);
 		exit(1);
 	}
 	
@@ -114,14 +114,14 @@ void oneArg(char* inputFileName) {
 void twoArgs(char* inputFileName, char* outputFileName) {
 	// Check that input and output files are different
 	if (strcmp(inputFileName, outputFileName) == 0) {
-		fprintf(stderr, "Input and output file must differ\n");
+		fprintf(stderr, "reverse: input and output file must differ\n");
 		exit(1);
 	}
 
 	// Open input file with error checking
 	FILE* inputFile = fopen(inputFileName, "r");
 	if (inputFile == NULL) {
-		fprintf(stderr, "error: cannot open file %s\n", inputFileName);
+		fprintf(stderr, "reverse: cannot open file %s\n", inputFileName);
 		exit(1);
 	}
 	
@@ -161,7 +161,7 @@ void twoArgs(char* inputFileName, char* outputFileName) {
 	// Open output file with error checking
 	FILE* outputFile = fopen(outputFileName, "w");
 	if (outputFile == NULL) {
-		fprintf(stderr, "error: cannot open file %s\n", outputFileName);
+		fprintf(stderr, "reverse: cannot open file %s\n", outputFileName);
 		for (int i = 0; i < lineCount; i++) {
 			free(lines[i]);
 		}
