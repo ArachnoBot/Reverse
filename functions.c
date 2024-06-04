@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/stat.h>
 #include "functions.h"
 
 
@@ -10,8 +11,6 @@ void noArgs() {
 	
 	char** lines = NULL;
 	int lineCount = 0;
-	
-	printf("Give inputs (quit by sending empty line):\n");
 	
 	// Get lines from user and store each line in the array of lines
 	while (getline(&inputLine, &inputLen, stdin) > 1) {
@@ -58,7 +57,7 @@ void oneArg(char* inputFileName) {
 	// Open input file with error checking
 	FILE* inputFile = fopen(inputFileName, "r");
 	if (inputFile == NULL) {
-		fprintf(stderr, "reverse: cannot open file %s\n", inputFileName);
+		fprintf(stderr, "reverse: cannot open file '%s'\n", inputFileName);
 		exit(1);
 	}
 	
@@ -112,16 +111,18 @@ void oneArg(char* inputFileName) {
 
 
 void twoArgs(char* inputFileName, char* outputFileName) {
-	// Check that input and output files are different
-	if (strcmp(inputFileName, outputFileName) == 0) {
-		fprintf(stderr, "reverse: input and output file must differ\n");
+	struct stat inStat, outStat;
+
+	// Get input file information
+	if (stat(inputFileName, &inStat) != 0){
+		fprintf(stderr, "reverse: cannot open file '%s'\n", inputFileName);
 		exit(1);
 	}
 
 	// Open input file with error checking
 	FILE* inputFile = fopen(inputFileName, "r");
 	if (inputFile == NULL) {
-		fprintf(stderr, "reverse: cannot open file %s\n", inputFileName);
+		fprintf(stderr, "reverse: cannot open file '%s'\n", inputFileName);
 		exit(1);
 	}
 	
@@ -158,7 +159,7 @@ void twoArgs(char* inputFileName, char* outputFileName) {
 	}
 	fclose(inputFile);
 	
-	// Open output file with error checking
+	// Open or create output file with error checking
 	FILE* outputFile = fopen(outputFileName, "w");
 	if (outputFile == NULL) {
 		fprintf(stderr, "reverse: cannot open file %s\n", outputFileName);
@@ -169,7 +170,31 @@ void twoArgs(char* inputFileName, char* outputFileName) {
 		free(lines);
 		exit(1);
 	}
-	
+
+	// Get output file information
+	if (stat(outputFileName, &outStat) != 0){
+		fprintf(stderr, "reverse: cannot open file '%s'\n", outputFileName);
+		fclose(outputFile);
+                for (int i = 0; i < lineCount; i++) {
+                        free(lines[i]);
+                }
+                free(inputLine);
+                free(lines);
+		exit(1);
+	}
+
+	// Check if output file is different from output file
+	if (inStat.st_ino == outStat.st_ino) { 
+		fprintf(stderr, "reverse: input and output file must differ\n");
+		fclose(outputFile);
+                for (int i = 0; i < lineCount; i++) {
+                        free(lines[i]);
+                }
+                free(inputLine);
+                free(lines);
+		exit(1);
+	}
+
 	// Write reversed lines to file
 	for (int i = lineCount; i > 0; i--) {
 		fprintf(outputFile, "%s", lines[i - 1]);
